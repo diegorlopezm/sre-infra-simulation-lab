@@ -1,0 +1,29 @@
+- name: Deploy complete infrastructure
+  hosts: localhost
+  collections:  
+    - community.docker
+
+  vars:
+    infra_path: "{{ playbook_dir }}/../../../"
+
+
+  tasks:
+    - name: Create shared Docker network
+      docker_network:
+        name: web-apps_default
+        driver: bridge
+    
+    - name: Deploy web applications
+      docker_compose_v2:
+        project_src: "{{ infra_path }}/web-apps"
+        state: present
+
+    - name: Deploy monitoring
+      docker_compose_v2:
+        project_src: "{{ infra_path }}/monitoring"
+        state: present
+
+    - name: Deploy load balancers
+      docker_compose_v2:
+        project_src: "{{ infra_path }}/load-balancers"
+        state: present

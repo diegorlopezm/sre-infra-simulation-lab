@@ -1,0 +1,31 @@
+- name: Teardown complete infrastructure
+  hosts: localhost
+  collections:  
+    - community.docker
+
+  vars:
+    infra_path: "{{ playbook_dir }}/../../../"
+
+  tasks:
+    - name: Remove load balancers
+      docker_compose_v2:
+        project_src: "{{ infra_path }}/load-balancers"
+        state: absent
+        remove_volumes: no
+
+    - name: Remove monitoring
+      docker_compose_v2:
+        project_src: "{{ infra_path }}/monitoring"
+        state: absent
+        remove_volumes: no
+
+    - name: Remove web applications
+      docker_compose_v2:
+        project_src: "{{ infra_path }}/web-apps"
+        state: absent
+        remove_volumes: no
+
+    - name: Remove shared Docker network
+      docker_network:
+        name: web-apps_default
+        state: absent
