@@ -11,27 +11,17 @@ services:
     depends_on:
       - blog-db
       - redis
-    ports:
-      - "5001:5000"
+    # ⚠️ QUITA el puerto mapeado - Traefik maneja el acceso
+    # ports:
+    #   - "5001:5000"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.blog.rule=Host(`blog.localhost`)"
+      - "traefik.http.routers.blog.entrypoints=web"
+    networks:
+      - webapp-network
 
-  # App 2 - API REST para gestión de tareas
-  # api-app:
-  #   build: ./api-app
-  #   container_name: api-app
-  #   environment:
-  #     - DATABASE_URL=postgresql://api_user:api_pass@api-db:5432/api_db
-  #   ports:
-  #     - "5001:5000"
-  #   deploy:
-  #     replicas: 2
-  #   labels:
-  #     - "traefik.enable=true"
-  #     - "traefik.http.routers.api.rule=Host(`api.localhost`)"
-
-  # Bases de datos
+  # Bases de datos (solo blog-db por ahora)
   blog-db:
     image: postgres:15
     container_name: blog-db
@@ -43,20 +33,8 @@ services:
       - blog-data:/var/lib/postgresql/data
       - ./init-scripts/blog-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
       - ./init-scripts/seed-data.sql:/docker-entrypoint-initdb.d/02-seed-data.sql
-    ports:
-      - "5432:5432"
-
-  # api-db:
-  #   image: postgres:15
-  #   environment:
-  #     POSTGRES_DB: api_db
-  #     POSTGRES_USER: api_user
-  #     POSTGRES_PASSWORD: api_pass
-  #   volumes:
-  #     - api-data:/var/lib/postgresql/data
-  #     - ./init-scripts/api-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
-  #   ports:
-  #     - "5433:5432"
+    networks:
+      - webapp-network
 
   # Cache
   redis:
@@ -64,10 +42,14 @@ services:
     command: redis-server --appendonly yes
     volumes:
       - redis-data:/data
-    ports:
-      - "6379:6379"
+    networks:
+      - webapp-network
 
 volumes:
   blog-data:
-  api-data:
   redis-data:
+
+networks:
+  webapp-network:
+    external: true
+    name: web-apps_default

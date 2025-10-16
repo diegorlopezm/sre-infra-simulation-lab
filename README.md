@@ -4,11 +4,19 @@
 [![Docker](https://img.shields.io/badge/Docker-Production-blue)](https://hub.docker.com)
 [![License](https://img.shields.io/github/license/diegorlopezm/sre-infra-simulation-lab)](LICENSE)
 
-**Production-ready lab simulating $250M enterprise infrastructure**. Hybrid setup: Docker microservices (RabbitMQ, Postgres, NGINX, HAProxy, Redis) monitored with Prometheus/Grafana, plus VMware Ceph cluster (3-node Linux) and Windows Server 2022 monitored with Zabbix agents/SNMP. Designed for **SRE**, **Platform Engineering**, and **DevOps** roles ($150k-$250k).
+**Production-ready lab simulating $250M enterprise infrastructure**. Dynamic load balancing, Hybrid setup: Docker microservices (RabbitMQ, Postgres, NGINX, HAProxy, Redis) monitored with Prometheus/Grafana, plus VMware Ceph cluster (3-node Linux) and Windows Server 2022 monitored with Zabbix agents/SNMP. Designed for **SRE**, **Platform Engineering**, and **DevOps** roles.
 
 **Status**: Functional Docker monitoring with Zabbix alerts, Prometheus metrics, Grafana dashboards. VMware extension for hybrid Windows/Linux (Ceph HA, IIS config).
 
 **As Junior**: Started as simple Docker lab, scaled to complex hybrid infra. Shows learning potential: from basic monitoring to HA/automation in weeks.
+
+---
+
+### **Key Components**:
+- **🚀 Traefik**: Dynamic reverse proxy with auto-service discovery
+- **📊 Monitoring**: Prometheus metrics + Grafana visualization + Zabbix alerts  
+- **🐳 Microservices**: Containerized apps with persistent storage
+- **🔧 Automation**: Docker Compose for easy replication
 
 ---
 
@@ -33,5 +41,36 @@
 
 ```bash
 git clone https://github.com/diegorlopezm/sre-infra-simulation-lab.git
-cd sre-infra-simulation-lab
-docker-compose up -d
+cd sre-infra-simulation-lab/infrastructure/monitoring
+docker-compose up -d 
+cd sre-infra-simulation-lab/infrastructure/web-apps
+docker-compose up -d 
+cd sre-infra-simulation-lab/infrastructure/load-balancers
+docker-compose up -d 
+```
+## 🌐 Load Balancing & Service Discovery
+
+### **Traefik Reverse Proxy**
+- **Dashboard**: http://localhost:8085/dashboard/
+- **Auto-discovery**: Dynamic routing via Docker labels
+- **Current Routes**:
+  - `blog.localhost` → Blog Application (:5000)
+  - `api.localhost` → REST API (:5001) - [Coming Soon]
+
+### **Adding New Services**
+Simply add Traefik labels to any container:
+
+```yaml
+labels:
+  - "traefik.enable=true"
+  - "traefik.http.routers.yourapp.rule=Host(`yourapp.localhost`)"
+  - "traefik.http.routers.yourapp.entrypoints=web"
+
+```
+
+Also add the following files to your Windows/Linux hosts file so traefik redirects your requests via DNS to your webapp container
+```yaml
+127.0.0.1 blog.localhost
+127.0.0.1 api.localhost
+127.0.0.1 traefik.localhost
+```

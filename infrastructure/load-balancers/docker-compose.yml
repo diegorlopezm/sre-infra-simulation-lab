@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik:v2.10  # ⚠️ Versión específica
+    container_name: traefik
+    command:
+      - "--api.dashboard=true"
+      - "--api.insecure=true"  # ⚠️ AÑADIR para desarrollo
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--log.level=DEBUG"  # ⚠️ DEBUG para ver qué pasa
+    ports:
+      - "80:80"
+      - "8085:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - webapp-network
+
+networks:
+  webapp-network:
+    external: true
+    name: web-apps_default
