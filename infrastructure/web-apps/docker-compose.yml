@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # App 1 - Blog con formulario de contacto
   blog-app:
