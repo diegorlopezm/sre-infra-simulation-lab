@@ -3,6 +3,18 @@ global:
   evaluation_interval: 15s
   scrape_timeout: 10s
 
+# ⭐⭐ NUEVA SECCIÓN: CONFIGURACIÓN DE ALERTMANAGER ⭐⭐
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']  # ← Conexión con Alertmanager
+      timeout: 10s
+      api_version: v2
+
+# ⭐⭐ NUEVA SECCIÓN: ARCHIVOS DE REGLAS DE ALERTA ⭐⭐  
+rule_files:
+  - "alert_rules.yml"  # ← Archivo donde defines las alertas
+
 scrape_configs:
   # 1. Prometheus mismo
   - job_name: 'prometheus'
@@ -23,5 +35,3 @@ scrape_configs:
   - job_name: 'grafana'
     static_configs:
       - targets: ['grafana:3000']
-
-  

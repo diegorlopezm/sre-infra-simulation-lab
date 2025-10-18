@@ -1,0 +1,94 @@
+groups:
+  - name: testing-alerts
+    rules:
+      # ✅ ALERTA DE TEST SIEMPRE ACTIVA - para ver que funciona
+      - alert: AlertmanagerWorking
+        expr: vector(1)  # Siempre verdadero
+        labels:
+          severity: info
+          team: monitoring
+        annotations:
+          summary: "Alertmanager is functioning correctly"
+          description: "This test alert confirms the Prometheus → Alertmanager pipeline is working"
+
+  - name: container-alerts
+    rules:
+      # 🔥 ALERTA: Contenedor usando mucha memoria (cAdvisor)
+      - alert: HighContainerMemory
+        expr: container_memory_usage_bytes{container!=""} / 1024 / 1024 > 30
+        for: 30s
+        labels:
+          severity: warning
+          source: cadvisor
+        annotations:
+          summary: "High memory usage in container {{ $labels.container }}"
+          description: "Container {{ $labels.container }} is using {{ $value | humanize }}MB of memory"
+
+      # 🔥 ALERTA: Contenedor usando mucha CPU (cAdvisor)
+      - alert: HighContainerCPU
+        expr: rate(container_cpu_usage_seconds_total{container!=""}[5m]) * 100 > 70
+        for: 1m
+        labels:
+          severity: warning
+          source: cadvisor
+        annotations:
+          summary: "High CPU usage in container {{ $labels.container }}"
+          description: "Container {{ $labels.container }} CPU usage is {{ $value | humanize }}%"
+
+      # 🔥 ALERTA: Contenedor reiniciándose mucho (cAdvisor)
+      - alert: ContainerFrequentlyRestarting
+        expr: rate(container_last_seen{container!=""}[10m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          source: cadvisor
+        annotations:
+          summary: "Container {{ $labels.container }} is restarting frequently"
+          description: "Container appears to be crashing and restarting"
+
+  - name: postgres-alerts
+    rules:
+      # 🐘 ALERTA: Conexiones altas a PostgreSQL (postgres-exporter)
+      - alert: HighPostgreSQLConnections
+        expr: pg_stat_database_numbackends{datname="zabbix"} > 35
+        for: 1m
+        labels:
+          severity: warning
+          source: postgres-exporter
+          database: zabbix
+        annotations:
+          summary: "High connections to PostgreSQL database {{ $labels.datname }}"
+          description: "Database {{ $labels.datname }} has {{ $value }} active connections"
+
+      # 🐘 ALERTA: PostgreSQL down (postgres-exporter)
+      - alert: PostgreSQLDown
+        expr: up{job="postgres"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          source: postgres-exporter
+        annotations:
+          summary: "PostgreSQL exporter is down"
+          description: "Cannot scrape metrics from PostgreSQL"
+
+  - name: service-health-alerts
+    rules:
+      # 🚨 ALERTA: Servicio de scraping caído
+      - alert: ScrapeJobFailing
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Scrape job {{ $labels.job }} is failing"
+          description: "Cannot scrape metrics from {{ $labels.instance }} for job {{ $labels.job }}"
+
+      # 🚨 ALERTA: Muy pocos targets scraping (para ver que hay servicios)
+      - alert: FewTargetsScraping
+        expr: count(up == 1) < 3
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Few targets are being scraped successfully"
+          description: "Only {{ $value }} targets are up, expected at least 3"

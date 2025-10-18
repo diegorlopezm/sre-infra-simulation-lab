@@ -1,0 +1,40 @@
+global:
+  # Configuración global de SMTP (para Gmail)
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: 'diegolopezmiguelanez@gmail.com'
+  smtp_auth_username: 'diegolopezmiguelanez@gmail.com'
+  smtp_auth_password: 'uqpavfleqkfymisg'  # App Password sin espacios
+
+route:
+  receiver: 'email-alerts'      # 🔸 Receptor por defecto (obligatorio)
+  group_by: ['alertname']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1m
+
+  # 🔸 Subrutas opcionales: si quieres enviar a Slack además
+  routes:
+    - match:
+        severity: 'critical'
+      receiver: 'slack-alerts'
+
+receivers:
+  # 📨 Envío de alertas por correo
+  - name: 'email-alerts'
+    email_configs:
+      - to: 'diegolopezmiguelanez@gmail.com'
+        send_resolved: true
+
+  # 💬 Envío de alertas por Slack
+  - name: 'slack-alerts'
+    slack_configs:
+      - api_url: 'SLACK_WEBHOOK_URL'
+        channel: '#alertas-prometheus'
+        send_resolved: true
+        title: "⚠️ Prometheus Alert"
+        text: |
+          *Alert:* {{ .CommonLabels.alertname }}
+          *Severity:* {{ .CommonLabels.severity }}
+          *Status:* {{ .Status }}
+          *Description:* {{ .CommonAnnotations.description }}
+          *Starts At:* {{ .StartsAt }}

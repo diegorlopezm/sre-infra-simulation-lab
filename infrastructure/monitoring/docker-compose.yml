@@ -41,6 +41,7 @@ services:
     container_name: prometheus
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./alert_rules.yml:/etc/prometheus/alert_rules.yml
       - /var/run/docker.sock:/var/run/docker.sock:ro 
       - prometheus-data:/prometheus  # ← PERSISTENCIA DE MÉTRICAS
     command:
@@ -51,6 +52,21 @@ services:
       - '--storage.tsdb.retention.time=30d'  # ← 30 días de retención
       - '--web.enable-lifecycle'
     ports: ["9090:9090"]
+    environment:
+      TZ: America/New_York
+
+  alertmanager:
+    image: prom/alertmanager:v0.28.0
+    container_name: alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+      - '--web.external-url=http://localhost:9093'
+    ports: ["9093:9093"]
+    volumes:
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - alertmanager-data:/alertmanager
+    depends_on: [prometheus]
     environment:
       TZ: America/New_York
 
@@ -89,4 +105,5 @@ volumes:
   zabbix-db-data:
   zabbix-server-data:
   grafana-data:
-  prometheus-data:  # ← NUEVO VOLUMEN PARA PROMETHEUS
+  prometheus-data:
+  alertmanager-data: 
