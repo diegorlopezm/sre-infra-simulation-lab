@@ -54,6 +54,7 @@ services:
     ports: ["9090:9090"]
     environment:
       TZ: America/New_York
+      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
 
   alertmanager:
     image: prom/alertmanager:v0.28.0
