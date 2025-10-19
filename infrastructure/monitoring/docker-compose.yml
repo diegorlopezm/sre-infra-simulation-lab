@@ -80,6 +80,7 @@ services:
     depends_on: [prometheus]
     environment:
       TZ: America/New_York
+      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
     networks:
       - web-apps_default
 
