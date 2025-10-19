@@ -1,5 +1,4 @@
 services:
-  # App 1 - Blog con formulario de contacto
   blog-app:
     build: ./blog-app
     container_name: blog-app
@@ -9,17 +8,13 @@ services:
     depends_on:
       - blog-db
       - redis
-    # ⚠️ QUITA el puerto mapeado - Traefik maneja el acceso
-    # ports:
-    #   - "5001:5000"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.blog.rule=Host(`blog.localhost`)"
       - "traefik.http.routers.blog.entrypoints=web"
     networks:
-      - webapp-network
+      - web-apps_default
 
-  # Bases de datos (solo blog-db por ahora)
   blog-db:
     image: postgres:15
     container_name: blog-db
@@ -32,22 +27,20 @@ services:
       - ./init-scripts/blog-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
       - ./init-scripts/seed-data.sql:/docker-entrypoint-initdb.d/02-seed-data.sql
     networks:
-      - webapp-network
+      - web-apps_default
 
-  # Cache
   redis:
     image: redis:alpine
     command: redis-server --appendonly yes
     volumes:
       - redis-data:/data
     networks:
-      - webapp-network
+      - web-apps_default
 
 volumes:
   blog-data:
   redis-data:
 
 networks:
-  webapp-network:
+  web-apps_default:
     external: true
-    name: web-apps_default

@@ -29,3 +29,9 @@
       docker_network:
         name: web-apps_default
         state: absent
+
+    - name: Remove automation services (n8n)
+      docker_compose_v2:
+        project_src: "{{ infra_path }}/automation"
+        state: absent
+        remove_volumes: no

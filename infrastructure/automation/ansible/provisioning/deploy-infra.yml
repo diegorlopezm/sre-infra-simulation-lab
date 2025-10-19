@@ -27,3 +27,8 @@
       docker_compose_v2:
         project_src: "{{ infra_path }}/load-balancers"
         state: present
+
+    - name: Deploy automation services (n8n)
+      docker_compose_v2:
+        project_src: "{{ infra_path }}/automation"
+        state: present
