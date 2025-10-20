@@ -1,1 +1,10 @@
 infrastructure/monitoring/.env
+
+# Sensitive / local Cloudflare and cert data
+acme/
+*.pem
+*.log
+*.json
+*Zone.Identifier
+config.yml
+

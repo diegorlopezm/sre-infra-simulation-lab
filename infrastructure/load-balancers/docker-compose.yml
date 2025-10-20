@@ -1,19 +1,22 @@
 services:
   traefik:
-    image: traefik:v2.10  
+    image: traefik:v2.10
     container_name: traefik
     command:
       - "--api.dashboard=true"
-      - "--api.insecure=true"  
+      - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
-      - "--log.level=DEBUG"  
+      - "--entrypoints.websecure.address=:443"
+      - "--log.level=DEBUG"
     ports:
       - "80:80"
+      - "443:443"
       - "8085:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./acme:/acme                # persistir acme.json (asegúrate de crear ./acme con permisos)
     networks:
       - webapp-network
 

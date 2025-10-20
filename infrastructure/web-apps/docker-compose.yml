@@ -1,17 +1,20 @@
+version: "3.9"
+
 services:
   blog-app:
     build: ./blog-app
     container_name: blog-app
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.blog.rule=Host(`blog.diegoricardo.dev`)"
+      - "traefik.http.routers.blog.entrypoints=web"
+      - "traefik.http.services.blog-app.loadbalancer.server.port=5000"
     environment:
       - DATABASE_URL=postgresql://blog_user:blog_pass@blog-db:5432/blog_db
       - REDIS_URL=redis://redis:6379
     depends_on:
       - blog-db
       - redis
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.blog.rule=Host(`blog.localhost`)"
-      - "traefik.http.routers.blog.entrypoints=web"
     networks:
       - web-apps_default
 
@@ -36,6 +39,20 @@ services:
       - redis-data:/data
     networks:
       - web-apps_default
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    command: tunnel --no-autoupdate run infra-tunnel
+    depends_on:
+      - blog-app
+    volumes:
+      - ./e56e9c7f-410a-4512-afd5-4bae2472962b.json:/etc/cloudflared/credentials.json:ro
+      - ./config.yml:/etc/cloudflared/config.yml:ro
+      - ./cert.pem:/etc/cloudflared/cert.pem:ro   # <--- monta el cert.pem
+    networks:
+      - web-apps_default
+
 
 volumes:
   blog-data:

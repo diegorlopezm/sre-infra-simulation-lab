@@ -6,6 +6,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-here'
+#app.config['SERVER_NAME'] = os.getenv('APP_HOSTNAME', None)
 
 # Configuración de la base de datos
 def get_db_connection():
