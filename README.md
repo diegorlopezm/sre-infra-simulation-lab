@@ -7,94 +7,83 @@
 ![Prometheus](https://img.shields.io/badge/Monitoring-Prometheus-orange?logo=prometheus&style=flat-square)
 
 **Production-grade infrastructure lab with full automation, monitoring, and SRE practices. Features dynamic load balancing, hybrid cloud simulation, and complete lifecycle management.**
+
+---
+## 🌐 Cloud Architecture Overview (New!)
+Since the host environment has **no public IP**, external traffic is now securely routed through **Cloudflare Tunnel (Cloudflared)**.
+
+### 🧭 Traffic Flow
+```
+User Browser (HTTPS)
+│
+▼
+🌩️ Cloudflare Edge Network
+│
+▼
+🕳️ Cloudflared Tunnel (Container)
+│
+▼
+⚙️ Traefik Reverse Proxy (Docker)
+│
+▼
+📊 Grafana / Blog / Prometheus / Zabbix Containers
+```
 ## 🛠️ Next Steps
 
+
+### 🔐 Key Highlights
+- **Cloudflared** handles all **external HTTPS connections** and terminates SSL at Cloudflare’s edge.  
+- **Traefik** manages **internal HTTP routing** between Docker services using labels.  
+- **Cloudflare-managed domain:** [`diegoricardo.dev`](https://diegoricardo.dev)  
+- **Certificates:** Fully handled by Cloudflare → No local ACME validation required.  
+- **Zero public exposure:** The host remains private; only Cloudflare endpoints are accessible externally.  
+
+---
+
 ## ✅ Completed Features
+### 🧰 Core Infrastructure
+- Docker Compose multi-stack deployment (load balancer, monitoring, web apps)
+- Environment configuration via `.env` (excluded from Git)
+- Automated orchestration with Ansible playbooks
 
-### Secrets Management
-- ✅ Environment variables in `.env` file
-- ✅ Docker Compose configured for env variables
-- ✅ `.env` added to `.gitignore`
-- 🔄 **Future**: HashiCorp Vault integration planned
+### 🔒 Secrets & Configuration
+- Environment variables for credentials  
+- `.env` added to `.gitignore`  
+- Future integration: HashiCorp Vault  
 
-### Core Monitoring
-- ✅ Prometheus metrics collection
-- ✅ Grafana dashboards
-- ✅ Alertmanager with Slack notifications
-- ✅ Node Exporter for system metrics
-- ✅ cAdvisor for container metrics
-- ✅ PostgreSQL monitoring
+### 📈 Monitoring Stack
+- **Prometheus** — Metrics collection  
+- **Grafana** — Visualization dashboards  
+- **Alertmanager** — Slack notifications  
+- **Zabbix** — Enterprise alerting  
+- **cAdvisor** — Container metrics  
+- **PostgreSQL Exporter** — Database monitoring  
+
+---
 
 ## 🚀 Implementation Phases
 
-### Phase 1 - Stabilization (Current Sprint)
-- [ ] **PgBouncer** - PostgreSQL connection pooling
-- [ ] **MinIO Setup** - S3-compatible backup storage
-- [ ] **Ansible Backup Playbooks** - Automated backup procedures
+| Phase | Description | Status |
+|-------|--------------|--------|
+| **1. Stabilization** | PgBouncer, MinIO, Ansible backups | ✅ Current |
+| **2. Expansion** | Redis, RabbitMQ, multi-channel alerts | 🔄 Next |
+| **3. Automation** | CI/CD pipelines, health checks | ⏳ Upcoming |
+| **4. Optimization** | HA PostgreSQL (Patroni), Vault integration | 🔮 Future |
 
-### Phase 2 - Expansion (Next Sprint)
-- [ ] **RabbitMQ** - Message brokering
-- [ ] **Redis** - Caching layer
-- [ ] **Multi-channel Alerting** - Email, Teams, Telegram
-- [ ] **Custom Exporters** - Application-specific metrics
+---
 
-### Phase 3 - Automation
-- [ ] **CI/CD Pipelines** - GitHub Actions
-- [ ] **Health Checks** - Automated service validation
-- [ ] **Disaster Recovery** - Restoration procedures
+## 🧩 Services Overview
 
-### Phase 4 - Optimization
-- [ ] **High Availability** - Patroni for PostgreSQL
-- [ ] **Vault Integration** - Advanced secrets management
-- [ ] **Advanced Monitoring** - Templatized dashboards
+| Service | Purpose | Port | Access |
+|----------|----------|------|--------|
+| 🌀 Traefik | Reverse Proxy / Load Balancer | 80, 443, 8085 | [traefik.diegoricardo.dev](https://traefik.diegoricardo.dev) |
+| 📊 Grafana | Metrics Visualization | 3000 | [grafana.diegoricardo.dev](https://grafana.diegoricardo.dev) |
+| 📈 Prometheus | Metrics Collection | 9090 | Internal |
+| 🚨 Zabbix | Enterprise Monitoring | 8080 | Internal |
+| 📰 Blog App | Sample Flask App | 5000 | [blog.diegoricardo.dev](https://blog.diegoricardo.dev) |
+| 🗄️ PostgreSQL | Database | 5432 | Internal |
+| ⚡ Redis | Cache | 6379 | Internal |
 
-## 📊 Services Overview
-
-### Core Monitoring Stack
-- **Prometheus**: Metrics collection and storage
-- **Grafana**: Visualization and dashboards
-- **Alertmanager**: Alert routing and notification
-- **Node Exporter**: System-level metrics
-- **cAdvisor**: Container metrics
-
-### Database & Storage
-- **PostgreSQL**: Primary data store
-- **PgBouncer**: Connection pooling (planned)
-- **MinIO**: S3-compatible backup storage (planned)
-
-### Message & Cache
-- **RabbitMQ**: Message broker (planned)
-- **Redis**: Caching layer (planned)
-
-### Log Management
-- **Loki**: Log aggregation and querying
-## 🚀 Quick Start (2 minutes)
-
-```bash
-git clone https://github.com/diegorlopezm/sre-infra-simulation-lab.git
-cd sre-infra-simulation-lab
-
-# Deploy complete infrastructure with Ansible
-ansible-playbook infrastructure/automation/ansible/provisioning/deploy-infra.yml
-
-# Access services:
-# 🔧 Traefik Dashboard: http://localhost:8085/dashboard/
-# 📊 Grafana: http://localhost:3000 (admin/admin)
-# 📈 Prometheus: http://localhost:9090
-# 🚨 Zabbix: http://localhost:8080
-```
-
-## 🏗️ Architecture Overview
-
-```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Load Balancer │    │   Monitoring     │    │   Web Apps      │
-│   Traefik       │◄──►│   Stack          │◄──►│   Microservices │
-│   :80/:8085     │    │   Prometheus     │    │   Blog + API    │
-└─────────────────┘    │   Grafana        │    └─────────────────┘
-                       │   Zabbix         │
-                       └──────────────────┘
-```
 
 ## 🆕 Latest Features
 
@@ -133,108 +122,28 @@ ansible-playbook infrastructure/automation/ansible/provisioning/deploy-infra.yml
 ### 🔧 Automation Features
 ```yaml
 - name: Deploy complete infrastructure
-  ansible-playbook deploy-infra.yml
+  ansible-playbook infrastructure/automation/ansible/provisioning/deploy-infra.yml
   
 - name: Teardown (preserving data)
-  ansible-playbook teardown-infra.yml
+  ansible-playbook infrastructure/automation/ansible/provisioning/teardown-infra.yml
   
-- name: Infrastructure health checks
-  ansible-playbook health-checks.yml
 ```
+## 🌐 Access Services
 
-## 🛠️ Management & Operations
-
-### 📈 Monitoring & Observability
-- **Real-time metrics** with Prometheus scraping
-- **Custom dashboards** in Grafana
-- **Alert management** with Zabbix triggers
-- **Container insights** via cAdvisor
-- **Database performance** monitoring
-
-### 🔒 Security & Reliability
-- **Multi-tenant isolation** with Docker networks
-- **Credential management** with environment variables
-- **Volume persistence** across deployments
-- **Health checks** and auto-recovery
-- **Secure service communication**
-
-## 🚀 Advanced Usage
-
-### 🔄 Full Infrastructure Lifecycle
-```bash
-# Deploy everything
-ansible-playbook infrastructure/automation/ansible/provisioning/deploy-infra.yml
-
-# Stop services (preserve data)
-ansible-playbook infrastructure/automation/ansible/provisioning/teardown-infra.yml
-
-# Health verification
-ansible-playbook infrastructure/automation/ansible/health-checks.yml
-```
-
-### 🎯 Adding New Services
-Simply add to the appropriate docker-compose and Traefik auto-discovers:
-
-```yaml
-labels:
-  - "traefik.enable=true"
-  - "traefik.http.routers.yourapp.rule=Host(`yourapp.localhost`)"
-  - "traefik.http.routers.yourapp.entrypoints=web"
-```
-
-### 🔧 Customization
-- Modify `infrastructure/automation/ansible/configs/` for specific setups
-- Edit Prometheus scraping rules in `infrastructure/monitoring/prometheus.yml`
-- Add Grafana dashboards via provisioning
-
-## 📈 Skills Demonstrated
-
-### 💼 SRE & DevOps
-- **Infrastructure as Code** (Ansible, Docker Compose)
-- **Observability** (Prometheus, Grafana, Zabbix)
-- **Load Balancing** (Traefik with auto-discovery)
-- **CI/CD Readiness** (Automated deployment pipelines)
-- **Disaster Recovery** (Volume-preserving operations)
-
-### 🔬 Technical Stack
-- **Container Orchestration**: Docker Compose, Container networking
-- **Monitoring**: Prometheus metrics, Grafana visualization, Zabbix alerts
-- **Automation**: Ansible playbooks, Python scripting
-- **Load Balancing**: Traefik reverse proxy, service discovery
-- **Databases**: PostgreSQL with performance monitoring
-
-## 🌟 Project Evolution
-
-**From Junior to Production-Ready:**
-- Started as simple Docker monitoring lab
-- Scaled to enterprise hybrid infrastructure
-- Added full automation with Ansible
-- Implemented production-grade monitoring
-- Developed operational procedures
-
-## 🆘 Troubleshooting
-
-### Common Issues
-```bash
-# Reset complete infrastructure
-ansible-playbook teardown-infra.yml
-docker system prune -f
-ansible-playbook deploy-infra.yml
-
-# Check service health
-docker ps -a
-docker logs [container_name]
-
-# Verify networking
-docker network ls
-curl http://localhost:3000/api/health
-```
-
-## 📝 License & Contributing
-
-This project is open source and available under the [MIT License](LICENSE).
+| Service            | URL                                  |
+|--------------------|--------------------------------------|
+| **Traefik Dashboard** | [http://localhost:8085/dashboard/](http://localhost:8085/dashboard/) |
+| **Grafana**           | [https://grafana.diegoricardo.dev](https://grafana.diegoricardo.dev) |
+| **Blog**              | [https://blog.diegoricardo.dev](https://blog.diegoricardo.dev) |
 
 ---
 
-**🚀 Ready for production deployment and perfect for SRE/DevOps interviews demonstrating full infrastructure lifecycle management.**
-```
+## 🧠 Skills Demonstrated
+
+- **Infrastructure as Code** — Ansible + Docker Compose  
+- **Observability** — Prometheus, Grafana, Zabbix  
+- **Load Balancing** — Traefik with auto-discovery  
+- **Cloud Networking** — Cloudflare Tunnels + Domain setup  
+- **Disaster Recovery** — Volume persistence + automated teardown  
+- **Security** — SSL termination at Cloudflare, private Docker networks
+
