@@ -1,5 +1,7 @@
 [![CI/CD Status](https://github.com/diegorlopezm/sre-infra-simulation-lab/actions/workflows/deploy.yml/badge.svg)](https://github.com/diegorlopezm/sre-infra-simulation-lab/actions)
 [![Live Demo](https://img.shields.io/badge/DEMO-Load_Balancing_Live-success)](https://blog.diegoricardo.dev)
+[![Slack Notifications](https://img.shields.io/badge/Slack-Real--time_Alerts-purple?logo=slack&style=flat-square)](https://slack.com)
+[![Alertmanager](https://img.shields.io/badge/Monitoring-Alertmanager-orange?logo=prometheus&style=flat-square)](https://prometheus.io/docs/alerting/latest/alertmanager/)
 # 🏢 SRE Infrastructure Automation Lab (2025)
 
 ![Docker](https://img.shields.io/badge/Docker-Containerized-blue?logo=docker&style=flat-square)
@@ -21,6 +23,7 @@
 | Real-time Traffic Distribution | Traefik load balancing with sticky sessions disabled | ✅ Live |
 | Request Statistics | Redis-based counting per instance | ✅ Live |
 | Live Monitoring | Traefik dashboard with traffic analytics | ✅ Live |
+![demo](image-8.png)
 ---
 ## 🌐 Cloud Architecture Overview (New!)
 Since the host environment has **no public IP**, external traffic is now securely routed through **Cloudflare Tunnel (Cloudflared)**.
@@ -106,14 +109,15 @@ User Browser (HTTPS)
 - **Volume management** ensuring zero data loss between deployments
 - **Multi-service orchestration** with dependency handling
 - **CI/CD Pipeline** with automated validation and testing
-
+![ansible](image-6.png)
 ### 🎯 Enhanced Monitoring Stack
 - **Prometheus** with 30-day metrics retention
 - **Grafana** with persistent dashboards and configurations
 - **Zabbix** for enterprise-grade alerting
 - **cAdvisor** for container metrics
 - **PostgreSQL exporter** for database monitoring
-
+![grafana](image-3.png)
+![alerting](image-4.png)
 ### 🔄 Advanced Load Balancing
 - **Traefik v2.10** with automatic service discovery
 - **Dynamic routing** via Docker labels
@@ -122,6 +126,7 @@ User Browser (HTTPS)
 - **NEW: Production load balancing across 3 container instances**
 - **NEW: Instance-aware application with visual load distribution**
 - **NEW: Redis-based request counting and instance statistics**
+![traefik](image-5.png)
 
 ### 🔄 CI/CD Pipeline
 - **GitHub Actions** for automated infrastructure validation
@@ -130,6 +135,21 @@ User Browser (HTTPS)
 - **Service discovery testing** for Traefik configuration
 - **Network configuration validation** across all services
 - **Automated quality gates** with professional reporting
+![gh actions](image-7.png)
+### 🔔 Real-Time Slack Notifications & Alerting
+
+#### 📱 GitHub Actions to Slack Integration
+- **Real-time pipeline notifications** for start, success, and failure events
+- **Detailed quality reports** with job status and direct links to GitHub Actions
+- **Critical failure alerts** for immediate team awareness
+- **Channel**: `C09N7P0EJ3T` with formatted messages and emojis
+![slack integration gh actions](image.png)
+#### 🚨 Alertmanager Slack Integration
+- **Monitoring alerts** from Prometheus metrics directly to Slack
+- **Grouped notifications** with intelligent routing and silencing capabilities
+- **Resolved alerts** notifications when issues are fixed
+- **Multiple severity levels** (critical, warning, info) with different formats
+![slack integration alert manager](image-1.png)
 
 ## 📊 Infrastructure Components
 
