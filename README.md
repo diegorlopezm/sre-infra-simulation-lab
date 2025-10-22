@@ -23,8 +23,8 @@
 | Real-time Traffic Distribution | Traefik load balancing with sticky sessions disabled | ✅ Live |
 | Request Statistics | Redis-based counting per instance | ✅ Live |
 | Live Monitoring | Traefik dashboard with traffic analytics | ✅ Live |
-![demo](image-8.png)
 ---
+![demo](image-8.png)
 ## 🌐 Cloud Architecture Overview (New!)
 Since the host environment has **no public IP**, external traffic is now securely routed through **Cloudflare Tunnel (Cloudflared)**.
 
