@@ -19,12 +19,12 @@ jobs:
       run: |
         echo "Validating Docker Compose configurations..."
         # ✅ ESTO SÍ falla si hay error de sintaxis
-        if ! docker-compose -f infrastructure/web-apps/docker-compose.yml config -q; then
+        if ! docker compose -f infrastructure/web-apps/docker-compose.yml config -q; then
           echo "❌ ERROR: web-apps/docker-compose.yml has syntax errors"
           exit 1
         fi
         
-        if ! docker-compose -f infrastructure/automation/docker-compose.yml config -q; then
+        if ! docker compose -f infrastructure/automation/docker-compose.yml config -q; then
           echo "❌ ERROR: automation/docker-compose.yml has syntax errors"  
           exit 1
         fi
