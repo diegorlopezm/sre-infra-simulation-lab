@@ -53,7 +53,7 @@ jobs:
           • *Repository*: ${{ github.repository }}
           • *Branch*: ${{ github.ref_name }}
           • *Triggered by*: ${{ github.actor }}
-          • *Commit*: ${{ github.sha | slice: 0, 8 }}
+          • *Commit*: ${{ github.sha }}
       env:
         SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
@@ -126,12 +126,12 @@ jobs:
       env:
         SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
-  # 🚨 NOTIFICACIÓN DE FALLOS CRÍTICOS (OPCIONAL)
+  # 🚨 NOTIFICACIÓN DE FALLOS CRÍTICOS
   critical-failure:
     name: 🚨 Critical Failure Alert
     runs-on: ubuntu-latest
     needs: [validate-configs, infrastructure-test, quality-gate]
-    if: failure()  # Solo se ejecuta si hay fallos
+    if: failure()
     
     steps:
     - name: 🚨 Notify Slack - Critical Failure
@@ -142,8 +142,6 @@ jobs:
           🚨 *CRITICAL FAILURE*: SRE Lab CI/CD Pipeline
           • *Repository*: ${{ github.repository }}
           • *Branch*: ${{ github.ref_name }}
-          • *Failed Jobs*: 
-          ${{ join(needs.*.result, ', ') }}
           • *View Failed Run*: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           • *Commit*: ${{ github.sha }}
           ¡Revisa los logs para más detalles!
