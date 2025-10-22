@@ -3,10 +3,10 @@ import psycopg2
 import redis
 import os
 from datetime import datetime
+import socket  # 🆕 IMPORTANTE: Agregar esto
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-here'
-#app.config['SERVER_NAME'] = os.getenv('APP_HOSTNAME', None)
 
 # Configuración de la base de datos
 def get_db_connection():
@@ -21,6 +21,16 @@ def index():
     redis_conn = get_redis_connection()
     visit_count = redis_conn.incr('visit_count')
     
+     # 🆕 USAR VARIABLES DE ENTORNO EN VEZ DE HOSTNAME
+    instance_name = os.getenv('INSTANCE_NAME', 'ORIGINAL')
+    instance_color = os.getenv('INSTANCE_COLOR', 'lightyellow')
+    hostname = socket.gethostname()  # Mantener para mostrar
+    
+    # 🆕 Contador por instancia
+    instance_count = redis_conn.incr(f'instance_{instance_name}_count')
+    # 🆕 Contador por instancia
+    instance_count = redis_conn.incr(f'instance_{instance_name}_count')
+    
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("SELECT * FROM contacts ORDER BY created_at DESC LIMIT 10")
@@ -31,7 +41,12 @@ def index():
     return render_template('index.html', 
                          visit_count=visit_count, 
                          contacts=contacts,
-                         success=request.args.get('success'))
+                         success=request.args.get('success'),
+                         # 🆕 NUEVAS VARIABLES
+                         instance_name=instance_name,
+                         instance_color=instance_color,
+                         hostname=hostname,
+                         instance_count=instance_count)
 
 @app.route('/add_contact', methods=['POST'])
 def add_contact():

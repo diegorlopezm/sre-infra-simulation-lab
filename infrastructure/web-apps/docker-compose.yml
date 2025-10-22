@@ -1,17 +1,61 @@
-version: "3.9"
-
 services:
-  blog-app:
+  blog-app-1:
     build: ./blog-app
-    container_name: blog-app
+    container_name: blog-app-1
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.blog.rule=Host(`blog.diegoricardo.dev`)"
       - "traefik.http.routers.blog.entrypoints=web"
-      - "traefik.http.services.blog-app.loadbalancer.server.port=5000"
+      - "traefik.http.services.blog.loadbalancer.server.port=5000"  # 🟢 CORREGIDO: "blog" en vez de "blog-app"
+      - "traefik.http.services.blog.loadbalancer.sticky=false"      # 🆕 NUEVO: Deshabilitar sticky sessions
+      - "traefik.http.services.blog.loadbalancer.sticky.cookie=false" # 🆕 NUEVO
     environment:
       - DATABASE_URL=postgresql://blog_user:blog_pass@blog-db:5432/blog_db
       - REDIS_URL=redis://redis:6379
+      - INSTANCE_NAME=BLUE
+      - INSTANCE_COLOR=lightblue
+    depends_on:
+      - blog-db
+      - redis
+    networks:
+      - web-apps_default
+
+  blog-app-2:
+    build: ./blog-app
+    container_name: blog-app-2
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.blog.rule=Host(`blog.diegoricardo.dev`)"
+      - "traefik.http.routers.blog.entrypoints=web"
+      - "traefik.http.services.blog.loadbalancer.server.port=5000"  # 🟢 CORREGIDO
+      - "traefik.http.services.blog.loadbalancer.sticky=false"      # 🆕 NUEVO
+      - "traefik.http.services.blog.loadbalancer.sticky.cookie=false" # 🆕 NUEVO
+    environment:
+      - DATABASE_URL=postgresql://blog_user:blog_pass@blog-db:5432/blog_db
+      - REDIS_URL=redis://redis:6379
+      - INSTANCE_NAME=GREEN
+      - INSTANCE_COLOR=lightgreen
+    depends_on:
+      - blog-db
+      - redis
+    networks:
+      - web-apps_default
+
+  blog-app-3:
+    build: ./blog-app
+    container_name: blog-app-3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.blog.rule=Host(`blog.diegoricardo.dev`)"
+      - "traefik.http.routers.blog.entrypoints=web"
+      - "traefik.http.services.blog.loadbalancer.server.port=5000"  # 🟢 CORREGIDO
+      - "traefik.http.services.blog.loadbalancer.sticky=false"      # 🆕 NUEVO
+      - "traefik.http.services.blog.loadbalancer.sticky.cookie=false" # 🆕 NUEVO
+    environment:
+      - DATABASE_URL=postgresql://blog_user:blog_pass@blog-db:5432/blog_db
+      - REDIS_URL=redis://redis:6379
+      - INSTANCE_NAME=RED
+      - INSTANCE_COLOR=lightcoral
     depends_on:
       - blog-db
       - redis
@@ -45,14 +89,15 @@ services:
     container_name: cloudflared
     command: tunnel --no-autoupdate run infra-tunnel
     depends_on:
-      - blog-app
+      - blog-app-1
+      - blog-app-2
+      - blog-app-3
     volumes:
       - ./e56e9c7f-410a-4512-afd5-4bae2472962b.json:/etc/cloudflared/credentials.json:ro
       - ./config.yml:/etc/cloudflared/config.yml:ro
-      - ./cert.pem:/etc/cloudflared/cert.pem:ro   # <--- monta el cert.pem
+      - ./cert.pem:/etc/cloudflared/cert.pem:ro
     networks:
       - web-apps_default
-
 
 volumes:
   blog-data:
