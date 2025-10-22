@@ -1,5 +1,7 @@
 [![CI/CD Status](https://github.com/diegorlopezm/sre-infra-simulation-lab/actions/workflows/deploy.yml/badge.svg)](https://github.com/diegorlopezm/sre-infra-simulation-lab/actions)
 [![Live Demo](https://img.shields.io/badge/DEMO-Load_Balancing_Live-success)](https://blog.diegoricardo.dev)
+[![Nomad](https://img.shields.io/badge/Orchestration-Nomad_Active-purple?logo=nomad&style=flat-square)](http://18.190.160.5:4646)
+[![AWS Lightsail](https://img.shields.io/badge/Cloud-AWS_Lightsail-orange?logo=amazonaws&style=flat-square)](https://aws.amazon.com/lightsail/)
 [![Slack Notifications](https://img.shields.io/badge/Slack-Real--time_Alerts-purple?logo=slack&style=flat-square)](https://slack.com)
 [![Alertmanager](https://img.shields.io/badge/Monitoring-Alertmanager-orange?logo=prometheus&style=flat-square)](https://prometheus.io/docs/alerting/latest/alertmanager/)
 # 🏢 SRE Infrastructure Automation Lab (2025)
@@ -26,8 +28,12 @@
 ---
 ![demo](image-8.png)
 ## 🌐 Cloud Architecture Overview (New!)
-Since the host environment has **no public IP**, external traffic is now securely routed through **Cloudflare Tunnel (Cloudflared)**.
+~~Since the host environment has no public IP, external traffic is now securely routed through Cloudflare Tunnel (Cloudflared).~~
 
+An AWS Lightsail VPS with public IP http://18.190.160.5/ has been provisioned. I have successfully configured Nomad and will now proceed to migrate the application's essential microservices. This VPS, equipped with 2 vCPUs and 2GB RAM, made Nomad the optimal choice over Kubernetes, which would be overkill for a single node.
+
+Furthermore, the AWS VPS will be connected to my local on-premise infrastructure via a Tailscale VPN container. This will host non-essential microservices like Prometheus, Grafana, and Zabbix, effectively creating a hybrid cloud and on-premise architecture.
+![alt text](image-9.png)
 ### 🧭 Traffic Flow
 ```
 User Browser (HTTPS)
