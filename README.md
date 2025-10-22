@@ -8,6 +8,18 @@
 
 **Production-grade infrastructure lab with full automation, monitoring, and SRE practices. Features dynamic load balancing, hybrid cloud simulation, and complete lifecycle management.**
 
+## 🎯 LIVE DEMO: Load Balancing in Action
+**🚀 Experience production-grade load balancing:** https://blog.diegoricardo.dev
+
+**💡 Quick test:** Refresh the page multiple times to see different instances!
+
+| Feature | Description | Status |
+|---------|-------------|--------|
+| Multi-Instance Deployment | 3 container instances with round-robin distribution | ✅ Live |
+| Visual Instance Identification | Color-coded UI (BLUE 🟦, GREEN 🟩, RED 🟥) | ✅ Live |
+| Real-time Traffic Distribution | Traefik load balancing with sticky sessions disabled | ✅ Live |
+| Request Statistics | Redis-based counting per instance | ✅ Live |
+| Live Monitoring | Traefik dashboard with traffic analytics | ✅ Live |
 ---
 ## 🌐 Cloud Architecture Overview (New!)
 Since the host environment has **no public IP**, external traffic is now securely routed through **Cloudflare Tunnel (Cloudflared)**.
@@ -105,20 +117,22 @@ User Browser (HTTPS)
 - **Dynamic routing** via Docker labels
 - **SSL/TLS ready** configuration
 - **Dashboard** for real-time traffic monitoring
+- **NEW: Production load balancing across 3 container instances**
+- **NEW: Instance-aware application with visual load distribution**
+- **NEW: Redis-based request counting and instance statistics**
 
 ## 📊 Infrastructure Components
 
 ### 🐳 Containerized Services
-| Service | Purpose | Port | Access |
-|---------|---------|------|---------|
-| Traefik | Load Balancer | 80, 8085 | `http://localhost:8085` |
-| Grafana | Metrics Visualization | 3000 | `http://localhost:3000` |
-| Prometheus | Metrics Collection | 9090 | `http://localhost:9090` |
-| Zabbix | Enterprise Monitoring | 8080 | `http://localhost:8080` |
-| Blog App | Sample Web Application | 5000 | `http://blog.localhost` |
-| PostgreSQL | Database | 5432 | Internal |
-| Redis | Caching | 6379 | Internal |
-
+| Service | Purpose | Port | Access | Instances |
+|---------|---------|------|---------|-----------|
+| Traefik | Load Balancer | 80, 8085 | `http://localhost:8085` | 1 |
+| Grafana | Metrics Visualization | 3000 | `https://grafana.diegoricardo.dev` | 1 |
+| Prometheus | Metrics Collection | 9090 | `http://localhost:9090` | 1 |
+| Zabbix | Enterprise Monitoring | 8080 | `http://localhost:8080` | 1 |
+| Blog App | Load Balanced Web Application | 5000 | `https://blog.diegoricardo.dev` | **3** |
+| PostgreSQL | Database | 5432 | Internal | 1 |
+| Redis | Caching & Session Storage | 6379 | Internal | 1 |
 ### 🔧 Automation Features
 ```yaml
 - name: Deploy complete infrastructure
@@ -142,8 +156,10 @@ User Browser (HTTPS)
 
 - **Infrastructure as Code** — Ansible + Docker Compose  
 - **Observability** — Prometheus, Grafana, Zabbix  
-- **Load Balancing** — Traefik with auto-discovery  
+- **Load Balancing** — Traefik with 3-instance round-robin distribution** 
+- **Container Orchestration — Multi-instance deployment with service discovery**
 - **Cloud Networking** — Cloudflare Tunnels + Domain setup  
 - **Disaster Recovery** — Volume persistence + automated teardown  
 - **Security** — SSL termination at Cloudflare, private Docker networks
+- **Performance Optimization — Horizontal scaling and traffic distribution**
 
