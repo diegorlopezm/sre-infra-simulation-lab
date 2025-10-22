@@ -18,7 +18,6 @@ jobs:
     - name: 🐳 Validate Docker Compose
       run: |
         echo "Validating Docker Compose configurations..."
-        # ✅ ESTO SÍ falla si hay error de sintaxis
         if ! docker compose -f infrastructure/web-apps/docker-compose.yml config -q; then
           echo "❌ ERROR: web-apps/docker-compose.yml has syntax errors"
           exit 1
@@ -33,7 +32,6 @@ jobs:
     - name: 🤖 Validate Ansible Syntax
       run: |
         cd infrastructure/automation/ansible/provisioning
-        # ✅ ESTO SÍ falla si hay error de sintaxis
         if ! ansible-playbook --syntax-check deploy-infra.yml; then
           echo "❌ ERROR: deploy-infra.yml has syntax errors"
           exit 1
@@ -44,6 +42,20 @@ jobs:
           exit 1  
         fi
         echo "✅ All Ansible playbooks are syntactically correct"
+
+    # ✅ NOTIFICACIÓN DE INICIO
+    - name: 🚀 Notify Slack - Pipeline Started
+      uses: slackapi/slack-github-action@v1.24.0
+      with:
+        channel-id: 'C09N7P0EJ3T'
+        slack-message: |
+          🚀 *Pipeline Started*: SRE Lab CI/CD
+          • *Repository*: ${{ github.repository }}
+          • *Branch*: ${{ github.ref_name }}
+          • *Triggered by*: ${{ github.actor }}
+          • *Commit*: ${{ github.sha | slice: 0, 8 }}
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
   infrastructure-test:
     name: 🧪 Infrastructure Tests
@@ -57,30 +69,26 @@ jobs:
     - name: 📊 Service Discovery Test
       run: |
         echo "Testing service discovery configuration..."
-        # ✅ ESTO SÍ falla si no encuentra labels de Traefik
         if ! grep -r "traefik.http.routers" infrastructure/ > /dev/null; then
           echo "❌ ERROR: No Traefik router labels found in infrastructure/"
           exit 1
         fi
         echo "✅ Traefik labels configuration validated"
-        grep -r "traefik.http.routers" infrastructure/ | head -3
         
     - name: 🔗 Network Configuration Test
       run: |
         echo "Validating network configurations..."
-        # ✅ ESTO SÍ falla si no encuentra la red
         if ! grep -r "web-apps_default" infrastructure/ > /dev/null; then
           echo "❌ ERROR: No services found using web-apps_default network"
           exit 1
         fi
         echo "✅ Network configurations validated"
-        grep -r "web-apps_default" infrastructure/ | head -3
 
   quality-gate:
     name: ✅ Quality Gate
     runs-on: ubuntu-latest
     needs: [validate-configs, infrastructure-test]
-    if: always()  # ⭐ NUEVO: Siempre se ejecuta, incluso si jobs anteriores fallan
+    if: always()
     
     steps:
     - name: 📈 Generate Quality Report
@@ -99,5 +107,45 @@ jobs:
         echo "- [🎯 Live Load Balancing Demo](https://blog.diegoricardo.dev)" >> quality-report.md
         echo "- 📊 Grafana Dashboard: https://grafana.diegoricardo.dev" >> quality-report.md
         
-        echo "📋 Quality Report Generated:"
         cat quality-report.md
+
+    # ✅ NOTIFICACIÓN FINAL
+    - name: 📢 Notify Slack - Final Status
+      if: always()
+      uses: slackapi/slack-github-action@v1.24.0
+      with:
+        channel-id: 'C09N7P0EJ3T'
+        slack-message: |
+          ${{ job.status == 'success' && '✅' || '❌' }} *Pipeline Finished*: SRE Lab CI/CD
+          • *Repository*: ${{ github.repository }}
+          • *Branch*: ${{ github.ref_name }}
+          • *Overall Status*: ${{ job.status }}
+          • *Validate Configs*: ${{ needs.validate-configs.result }}
+          • *Infra Tests*: ${{ needs.infrastructure-test.result }}
+          • *View Results*: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+  # 🚨 NOTIFICACIÓN DE FALLOS CRÍTICOS (OPCIONAL)
+  critical-failure:
+    name: 🚨 Critical Failure Alert
+    runs-on: ubuntu-latest
+    needs: [validate-configs, infrastructure-test, quality-gate]
+    if: failure()  # Solo se ejecuta si hay fallos
+    
+    steps:
+    - name: 🚨 Notify Slack - Critical Failure
+      uses: slackapi/slack-github-action@v1.24.0
+      with:
+        channel-id: 'C09N7P0EJ3T'
+        slack-message: |
+          🚨 *CRITICAL FAILURE*: SRE Lab CI/CD Pipeline
+          • *Repository*: ${{ github.repository }}
+          • *Branch*: ${{ github.ref_name }}
+          • *Failed Jobs*: 
+          ${{ join(needs.*.result, ', ') }}
+          • *View Failed Run*: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          • *Commit*: ${{ github.sha }}
+          ¡Revisa los logs para más detalles!
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
