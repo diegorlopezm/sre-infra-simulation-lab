@@ -1,4 +1,5 @@
 
+[![CI/CD Status](https://github.com/diegorlopezm/sre-infra-simulation-lab/actions/workflows/deploy.yml/badge.svg)](https://github.com/diegorlopezm/sre-infra-simulation-lab/actions)
 # 🏢 SRE Infrastructure Automation Lab (2025)
 
 ![Docker](https://img.shields.io/badge/Docker-Containerized-blue?logo=docker&style=flat-square)

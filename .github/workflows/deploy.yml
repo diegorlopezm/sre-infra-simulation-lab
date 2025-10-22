@@ -1,0 +1,103 @@
+name: 🚀 SRE Lab CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate-configs:
+    name: 🔧 Validate Configurations
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🐳 Validate Docker Compose
+      run: |
+        echo "Validating Docker Compose configurations..."
+        # ✅ ESTO SÍ falla si hay error de sintaxis
+        if ! docker-compose -f infrastructure/web-apps/docker-compose.yml config -q; then
+          echo "❌ ERROR: web-apps/docker-compose.yml has syntax errors"
+          exit 1
+        fi
+        
+        if ! docker-compose -f infrastructure/automation/docker-compose.yml config -q; then
+          echo "❌ ERROR: automation/docker-compose.yml has syntax errors"  
+          exit 1
+        fi
+        echo "✅ All Docker configurations are valid"
+        
+    - name: 🤖 Validate Ansible Syntax
+      run: |
+        cd infrastructure/automation/ansible/provisioning
+        # ✅ ESTO SÍ falla si hay error de sintaxis
+        if ! ansible-playbook --syntax-check deploy-infra.yml; then
+          echo "❌ ERROR: deploy-infra.yml has syntax errors"
+          exit 1
+        fi
+        
+        if ! ansible-playbook --syntax-check teardown-infra.yml; then
+          echo "❌ ERROR: teardown-infra.yml has syntax errors"
+          exit 1  
+        fi
+        echo "✅ All Ansible playbooks are syntactically correct"
+
+  infrastructure-test:
+    name: 🧪 Infrastructure Tests
+    runs-on: ubuntu-latest
+    needs: validate-configs
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 📊 Service Discovery Test
+      run: |
+        echo "Testing service discovery configuration..."
+        # ✅ ESTO SÍ falla si no encuentra labels de Traefik
+        if ! grep -r "traefik.http.routers" infrastructure/ > /dev/null; then
+          echo "❌ ERROR: No Traefik router labels found in infrastructure/"
+          exit 1
+        fi
+        echo "✅ Traefik labels configuration validated"
+        grep -r "traefik.http.routers" infrastructure/ | head -3
+        
+    - name: 🔗 Network Configuration Test
+      run: |
+        echo "Validating network configurations..."
+        # ✅ ESTO SÍ falla si no encuentra la red
+        if ! grep -r "web-apps_default" infrastructure/ > /dev/null; then
+          echo "❌ ERROR: No services found using web-apps_default network"
+          exit 1
+        fi
+        echo "✅ Network configurations validated"
+        grep -r "web-apps_default" infrastructure/ | head -3
+
+  quality-gate:
+    name: ✅ Quality Gate
+    runs-on: ubuntu-latest
+    needs: [validate-configs, infrastructure-test]
+    if: always()  # ⭐ NUEVO: Siempre se ejecuta, incluso si jobs anteriores fallan
+    
+    steps:
+    - name: 📈 Generate Quality Report
+      run: |
+        echo "🚀 SRE Infrastructure Lab - Quality Report" > quality-report.md
+        echo "===========================================" >> quality-report.md
+        echo "📅 Generated: $(date)" >> quality-report.md
+        echo "🌐 Live Demo: https://blog.diegoricardo.dev" >> quality-report.md
+        echo "" >> quality-report.md
+        echo "## 📊 Pipeline Status" >> quality-report.md
+        echo "- ✅ Validate Configurations: ${{ needs.validate-configs.result }}" >> quality-report.md
+        echo "- ✅ Infrastructure Tests: ${{ needs.infrastructure-test.result }}" >> quality-report.md
+        echo "" >> quality-report.md
+        echo "## 🔍 Quick Links" >> quality-report.md  
+        echo "- [📖 GitHub Repository](https://github.com/${{ github.repository }})" >> quality-report.md
+        echo "- [🎯 Live Load Balancing Demo](https://blog.diegoricardo.dev)" >> quality-report.md
+        echo "- 📊 Grafana Dashboard: https://grafana.diegoricardo.dev" >> quality-report.md
+        
+        echo "📋 Quality Report Generated:"
+        cat quality-report.md
