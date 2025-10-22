@@ -1,12 +1,12 @@
-
 [![CI/CD Status](https://github.com/diegorlopezm/sre-infra-simulation-lab/actions/workflows/deploy.yml/badge.svg)](https://github.com/diegorlopezm/sre-infra-simulation-lab/actions)
+[![Live Demo](https://img.shields.io/badge/DEMO-Load_Balancing_Live-success)](https://blog.diegoricardo.dev)
 # 🏢 SRE Infrastructure Automation Lab (2025)
 
 ![Docker](https://img.shields.io/badge/Docker-Containerized-blue?logo=docker&style=flat-square)
 ![Ansible](https://img.shields.io/badge/Ansible-Automated-red?logo=ansible&style=flat-square)
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-blue?logo=kubernetes&style=flat-square)
 ![Prometheus](https://img.shields.io/badge/Monitoring-Prometheus-orange?logo=prometheus&style=flat-square)
-
+![GitHub Actions](https://img.shields.io/badge/CI/CD-GitHub_Actions-blue?logo=githubactions&style=flat-square)
 **Production-grade infrastructure lab with full automation, monitoring, and SRE practices. Features dynamic load balancing, hybrid cloud simulation, and complete lifecycle management.**
 
 ## 🎯 LIVE DEMO: Load Balancing in Action
@@ -78,9 +78,9 @@ User Browser (HTTPS)
 
 | Phase | Description | Status |
 |-------|--------------|--------|
-| **1. Stabilization** | PgBouncer, MinIO, Ansible backups | ✅ Current |
-| **2. Expansion** | Redis, RabbitMQ, multi-channel alerts | 🔄 Next |
-| **3. Automation** | CI/CD pipelines, health checks | ⏳ Upcoming |
+| **1. Stabilization** | PgBouncer, MinIO, Ansible backups | ✅ **Completed** |
+| **2. Expansion** | **Load balancing, multi-instance deployment** | ✅ **Completed** |
+| **3. Automation** | **CI/CD pipelines, automated validation** | ✅ **Completed** |
 | **4. Optimization** | HA PostgreSQL (Patroni), Vault integration | 🔮 Future |
 
 ---
@@ -105,6 +105,7 @@ User Browser (HTTPS)
 - **One-command deployment** and teardown with data preservation
 - **Volume management** ensuring zero data loss between deployments
 - **Multi-service orchestration** with dependency handling
+- **CI/CD Pipeline** with automated validation and testing
 
 ### 🎯 Enhanced Monitoring Stack
 - **Prometheus** with 30-day metrics retention
@@ -121,6 +122,14 @@ User Browser (HTTPS)
 - **NEW: Production load balancing across 3 container instances**
 - **NEW: Instance-aware application with visual load distribution**
 - **NEW: Redis-based request counting and instance statistics**
+
+### 🔄 CI/CD Pipeline
+- **GitHub Actions** for automated infrastructure validation
+- **Docker Compose syntax validation** on every commit
+- **Ansible playbook validation** and syntax checking
+- **Service discovery testing** for Traefik configuration
+- **Network configuration validation** across all services
+- **Automated quality gates** with professional reporting
 
 ## 📊 Infrastructure Components
 
@@ -156,11 +165,11 @@ User Browser (HTTPS)
 ## 🧠 Skills Demonstrated
 
 - **Infrastructure as Code** — Ansible + Docker Compose  
+- **CI/CD Automation** — GitHub Actions with validation pipelines
 - **Observability** — Prometheus, Grafana, Zabbix  
-- **Load Balancing** — Traefik with 3-instance round-robin distribution** 
-- **Container Orchestration — Multi-instance deployment with service discovery**
+- **Load Balancing** — Traefik with 3-instance round-robin distribution
+- **Container Orchestration** — Multi-instance deployment with service discovery
 - **Cloud Networking** — Cloudflare Tunnels + Domain setup  
 - **Disaster Recovery** — Volume persistence + automated teardown  
 - **Security** — SSL termination at Cloudflare, private Docker networks
-- **Performance Optimization — Horizontal scaling and traffic distribution**
-
+- **Performance Optimization** — Horizontal scaling and traffic distribution
