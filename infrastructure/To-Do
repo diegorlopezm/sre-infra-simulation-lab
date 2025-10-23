@@ -1,0 +1,20 @@
+LGTM Stack
+LGTM es un stack popular de observabilidad que combina varias herramientas open source:
+
+Componentes:
+L - Loki: Sistema de agregación de logs (de Grafana Labs)
+
+G - Grafana: Plataforma de visualización y dashboards
+
+T - Tempo: Sistema de trazas distribuidas
+
+M - Mimir (o M - Metrics): Sistema de almacenamiento de métricas
+
+Flujo típico:
+Loki recoge logs de las aplicaciones
+
+Tempo almacena las trazas de OpenTelemetry
+
+Mimir gestiona las métricas
+
+Grafana visualiza y correlaciona todos los datos
